@@ -29,5 +29,6 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="FIPE_TOKEN" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1MGVkNDgyMy05MzRmLTRlZDktODkzZS01MWIyNGFhNWZjZTAiLCJlbWFpbCI6InJvY2hhaGVucmlxdWUxOEBnbWFpbC5jb20iLCJpYXQiOjE3MzI4MzcxMzJ9.-wsA5uHb557dp0qhSefxJJoWJWpAQ8_O9OwI9XN7TsA"/>
     </php>
 </phpunit>
