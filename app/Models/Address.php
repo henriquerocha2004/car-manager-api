@@ -46,6 +46,7 @@ class Address extends Model
         'state',
         'zip_code',
         'person_id',
+        'description',
     ];
 
     public $incrementing = false;
