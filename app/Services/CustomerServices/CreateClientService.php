@@ -3,6 +3,7 @@
 namespace App\Services\CustomerServices;
 
 use App\Actions\CustomerService\Clients\CreateClient;
+use App\Actions\CustomerService\Clients\SearchClient;
 use App\Actions\Shared\Addresses\CreateAddress;
 use App\Actions\Shared\Contacts\CreateContact;
 use App\Dto\Client\ClientRequestDto;
@@ -13,7 +14,8 @@ readonly class CreateClientService
     public function __construct(
         private CreateClient  $createClient,
         private CreateAddress $createAddress,
-        private CreateContact $createContact
+        private CreateContact $createContact,
+        private SearchClient $searchClient
     ) {
     }
 
@@ -22,6 +24,16 @@ readonly class CreateClientService
      */
     public function execute(ClientRequestDto $clientRequestDto): void
     {
+        $clientExistis = $this->searchClient->searchByDocument(
+            $clientRequestDto->document,
+            $clientRequestDto->firstName,
+            $clientRequestDto->lastName,
+        );
+
+        if ($clientExistis) {
+            throw new CreateClientException('Client already exists.');
+        }
+
         $clientId = $this->createClient->execute($clientRequestDto);
 
         if (is_null($clientId)) {
