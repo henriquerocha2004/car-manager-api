@@ -51,6 +51,13 @@ class CarsModel extends Model
         'fipe_lib_model_code',
     ];
 
+    protected $hidden = [
+       'created_at',
+       'updated_at',
+       'deleted_at',
+       'brand_id'
+    ];
+
     public function brand(): BelongsTo
     {
         return $this->belongsTo(CarBrand::class, 'brand_id', 'id');
