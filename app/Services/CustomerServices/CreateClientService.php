@@ -2,6 +2,7 @@
 
 namespace App\Services\CustomerServices;
 
+use App\Actions\CustomerService\Clients\AssociateCarClient;
 use App\Actions\CustomerService\Clients\CreateClient;
 use App\Actions\CustomerService\Clients\SearchClient;
 use App\Actions\Shared\Addresses\CreateAddress;
@@ -15,7 +16,8 @@ readonly class CreateClientService
         private CreateClient  $createClient,
         private CreateAddress $createAddress,
         private CreateContact $createContact,
-        private SearchClient $searchClient
+        private SearchClient $searchClient,
+        private AssociateCarClient $associateCarClient,
     ) {
     }
 
@@ -46,6 +48,10 @@ readonly class CreateClientService
 
         if (!empty($clientRequestDto->contacts)) {
             $this->createContact->execute($clientId, $clientRequestDto->contacts);
+        }
+
+        if (!empty($clientRequestDto->vehicles)) {
+            $this->associateCarClient->execute($clientId, $clientRequestDto->vehicles);
         }
     }
 }

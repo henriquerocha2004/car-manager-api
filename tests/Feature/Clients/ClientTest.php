@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Models\CarBrand;
+use App\Models\CarsModel;
 use App\Models\Client;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -8,6 +10,7 @@ use function Pest\Laravel\delete;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 use function Pest\Laravel\put;
+use const App\Models\CarBrand;
 
 covers(ClientController::class);
 
@@ -194,4 +197,28 @@ it('should return error if client already exists on try create', function () {
     ], ['accept' => 'application/json']);
 
     $response->assertStatus(Response::HTTP_INTERNAL_SERVER_ERROR);
+});
+
+it('should create client with cars associated', function () {
+    $brandsWithCars = CarBrand::factory()
+        ->has(CarsModel::factory()->count(3), 'models')
+        ->count(3)
+        ->create();
+    $carsIds = $brandsWithCars->first()->models()->get()->pluck('id')->toArray();
+
+    $response = post('/api/client', [
+        'first_name' => 'John',
+        'last_name' => 'Doe',
+        'entity_type' => 'PF',
+        'document_type' => 'CPF',
+        'document' => '270.017.120-94',
+        'birth_date' => '1990-01-01',
+        'vehicles' => $carsIds,
+    ]);
+
+    $response->assertStatus(Response::HTTP_CREATED);
+    $client = Client::query()->first();
+    $cars = $client->cars()->get();
+
+    expect($cars->count())->toBe(3);
 });
