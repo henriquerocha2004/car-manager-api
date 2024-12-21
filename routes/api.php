@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CarsController;
 use App\Http\Controllers\ClientController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,3 +25,7 @@ Route::group(['prefix' => 'client'], function () {
     Route::put('/{id}', [ClientController::class, 'update']);
     Route::delete('/{id}', [ClientController::class, 'delete']);
 })->middleware('auth:sanctum');
+
+Route::group(['prefix' => 'cars'], function () {
+   Route::get('/', [CarsController::class, 'search']);
+});

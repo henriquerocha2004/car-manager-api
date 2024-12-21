@@ -10,7 +10,7 @@ class SearchClient
     public function searchOne(string $id): ?array
     {
         return Client::query()
-            ->with(['contacts', 'addresses'])
+            ->with(['contacts', 'addresses', 'cars'])
             ->whereId($id)
             ->first()
             ->toArray();
