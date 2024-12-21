@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -26,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Address> $addresses
  * @property-read int|null $addresses_count
  * @property-read Collection<int, Contact> $contacts
+ * @property-read Collection<int, CarsModel> $cars
  * @property-read int|null $contacts_count
  * @method static Builder<static>|Client newModelQuery()
  * @method static Builder<static>|Client newQuery()
@@ -74,5 +76,15 @@ class Client extends Model
     public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class, 'person_id', 'id');
+    }
+
+    public function cars(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            CarsModel::class,
+            'client_cars',
+            'client_id',
+            'car_id'
+        );
     }
 }
