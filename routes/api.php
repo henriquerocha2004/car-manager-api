@@ -24,7 +24,7 @@ Route::group(['prefix' => 'client'], function () {
     Route::post('/', [ClientController::class, 'store']);
     Route::put('/{id}', [ClientController::class, 'update']);
     Route::delete('/{id}', [ClientController::class, 'delete']);
-})->middleware('auth:sanctum');
+})->middleware('auth:sanctum');         
 
 Route::group(['prefix' => 'cars'], function () {
    Route::get('/', [CarsController::class, 'search']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\CustomerService\Clients\DeleteClient;
 use App\Actions\CustomerService\Clients\SearchClient;
 use App\Http\Requests\ClientRequest;
+use App\Http\Requests\SearchRequest;
 use App\Services\CustomerServices\CreateClientService;
 use App\Services\CustomerServices\UpdateClientService;
 use Exception;
@@ -23,14 +24,14 @@ class ClientController extends Controller
     ) {
     }
 
-    public function search(Request $request): JsonResponse
+    public function search(SearchRequest $request): JsonResponse
     {
         try {
-            $clients = $this->searchClient->searchAll($request->all());
-
+            $resultSearch = $this->searchClient->searchAll($request->getData());
             return response()->json([
                 'success' => true,
-                'data' => $clients
+                'data' => $resultSearch->data,
+                'last_page' => $resultSearch->totalPages,
             ], Response::HTTP_OK);
 
         } catch (Exception $exception) {

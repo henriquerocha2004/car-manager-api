@@ -154,33 +154,33 @@ it('should retrieve one client', function () {
 it('should retrieve clients by filter', function () {
     Client::factory()->count(7)->create();
 
-    $response = get("/api/client?limit=5");
+    $response = get("/api/client?size=5&page=1");
     $dataResponse = json_decode($response->getContent(), true);
-    expect($dataResponse['data']['data'])->toHaveCount(5);
+    expect($dataResponse['data'])->toHaveCount(5);
 
     $client = Client::query()->first();
 
-    $response = get("/api/client?limit=5&cursor={$dataResponse['data']['next_cursor']}");
+    $response = get("/api/client?size=5&page=2&sorters[0][field]=first_name&sorters[0][dir]=asc");
     $dataResponse = json_decode($response->getContent(), true);
-    expect($dataResponse['data']['data'])->toHaveCount(2);
+    expect($dataResponse['data'])->toHaveCount(2);
 
-    $response = get("/api/client?limit=5&search={$client->first_name}");
+    $response = get("/api/client?size=5&page=1&search={$client->first_name}");
     $dataResponse = json_decode($response->getContent(), true);
-    expect($dataResponse['data']['data'])
+    expect($dataResponse['data'])
         ->toHaveCount(1)
-        ->and($dataResponse['data']['data'][0]['first_name'])->toBe($client->first_name);
+        ->and($dataResponse['data'][0]['first_name'])->toBe($client->first_name);
 
-    $response = get("/api/client?limit=5&search={$client->last_name}");
+    $response = get("/api/client?size=5&page=1&search={$client->last_name}");
     $dataResponse = json_decode($response->getContent(), true);
-    expect($dataResponse['data']['data'])
+    expect($dataResponse['data'])
         ->toHaveCount(1)
-        ->and($dataResponse['data']['data'][0]['last_name'])->toBe($client->last_name);
+        ->and($dataResponse['data'][0]['last_name'])->toBe($client->last_name);
 
-    $response = get("/api/client?limit=5&search={$client->document}");
+    $response = get("/api/client?size=5&page=1&search={$client->document}");
     $dataResponse = json_decode($response->getContent(), true);
-    expect($dataResponse['data']['data'])
+    expect($dataResponse['data'])
         ->toHaveCount(1)
-        ->and($dataResponse['data']['data'][0]['document'])->toBe($client->document);
+        ->and($dataResponse['data'][0]['document'])->toBe($client->document);
 });
 
 it('should return error if client already exists on try create', function () {
