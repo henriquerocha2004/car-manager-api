@@ -2,7 +2,9 @@
 
 namespace App\Actions\CustomerService\Clients;
 
+use App\Dto\Search\SearchResultDto;
 use App\Models\Client;
+use App\Shared\Search\Search;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 
 class SearchClient
@@ -16,18 +18,33 @@ class SearchClient
             ->toArray();
     }
 
-    public function searchAll(array $filters): CursorPaginator
+    public function searchAll(Search $searchDto): SearchResultDto
     {
-        $query = Client::query();
+        $query = Client::query()
+            ->selectRaw('*, COUNT(*) OVER() as total')
+            ->take($searchDto->limit ?? 10)
+            ->offset($searchDto->offset());
 
-        if (!empty($filters['search'])) {
-            $query->whereRaw('first_name ILIKE ?', ["%{$filters['search']}%"])
-            ->orWhereRaw('last_name ILIKE ?', ["%{$filters['search']}%"])
-            ->orWhereRaw('document ILIKE ?', ["%{$filters['search']}%"])
-            ->orWhereRaw('entity_type ILIKE ?', ["%{$filters['search']}%"]);
+        if (!empty($searchDto->search)) {
+            $query->whereRaw('first_name ILIKE ?', ["%{$searchDto->search}%"])
+            ->orWhereRaw('last_name ILIKE ?', ["%{$searchDto->search}%"])
+            ->orWhereRaw('document ILIKE ?', ["%{$searchDto->search}%"])
+            ->orWhereRaw('entity_type ILIKE ?', ["%{$searchDto->search}%"]);
         }
 
-        return $query->cursorPaginate($filters['limit'] ?? 10);
+        if (!empty($searchDto->sorters)) {
+            foreach ($searchDto->sorters as $sorter) {
+                $query->orderBy($sorter['field'], $sorter['dir']);
+            }
+        }
+
+        $result = $query->get();
+        $totalPages = $result->first()->total / $searchDto->limit;
+
+        return new SearchResultDto(
+           data: $result->toArray(),
+           totalPages: $totalPages
+        );
     }
 
     public function searchByDocument(string $document, string $firstName, string $lastName): ?Client
